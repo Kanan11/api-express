@@ -1,11 +1,14 @@
 var express = require('express');
 const path = require('path');
+var artists = require('./artists/artists');
+var generateId = require('./artists/artists');
 
 var app = express();
 
 function generateId() {
     return Math.floor(Math.random() * 100)
 };
+
 
 var artists = [
     {
@@ -22,24 +25,32 @@ var artists = [
     }
 ];
 
-
-
 //Body parser Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/artists', function (req, res) {
-    res.send(artists)
-});
-
-
-app.get('/artists/:id', function (req, res) {
-    //console.log(req.params);
-    var artist = artists.find(function (artist) {
-        return artist.id === req.params.id
+try{
+    app.get('/artists', function (req, res) {
+        res.send(artists)
     });
-    res.send(artist);
-});
+}catch{
+    console.log('error')
+}
+
+// Här andra variant GET
+try {
+    app.get('/artists/:id', function (req, res) {
+        //console.log(req.params);
+        var artist = artists.find(function (artist) {
+            return artist.id === req.params.id
+        });
+        res.send(artist);
+    })
+}
+catch {
+    console.log('error defined')
+};
+
 
 
 /* app.get('/test', function (req, res) {
@@ -61,32 +72,48 @@ app.listen(3012, function () {
 })
 
 // Lägga till 
-app.post('/artists', function (req, res) {
-    var artist = {
-        id: generateId(),
-        name: req.body.name
-    };
-    artists.push(artist);
-    //console.log(req.body);
-    //res.json(artist + 'post data');
-    res.send('added');
-})
+try {
+
+    app.post('/artists', function (req, res) {
+        var artist = {
+            id: generateId(),
+            name: req.body.name
+        };
+        artists.push(artist);
+        //console.log(req.body);
+        //res.json(artist + 'post data');
+        res.send('added');
+    });
+}catch{
+    console.error();
+}
 
 // Uppdatera befinglight namn
-app.put('/artists/:id', function (req, res) {
-    var artist = artists.find(function (artist) {
-        return artist.id === Number(req.params.id) //här kan använda parseInt eller Number, för att ändra string till number
-    });
-    artist.name = req.body.name;
-    //res.json(artist + 'artist name is updated');
-    res.send('updated')
-})
+try{
 
-app.delete('/artists/:id', function (req, res) {
-    artists = artists.filter(function (artist) {
+    app.put('/artists/:id', function (req, res) {
+        var artist = artists.find(function (artist) {
+            return artist.id === Number(req.params.id) //här kan använda parseInt eller Number, för att ändra string till number
+        });
+        artist.name = req.body.name;
+        //res.json(artist + 'artist name is updated');
+        res.send('updated')
+    })
+}catch{
+    console.error();
+}
+
+
+// Ta bort
+try{
+    app.delete('/artists/:id', function (req, res) {
+        artists = artists.filter(function (artist) {
         return artist.id !== Number(req.params.id); //här kan använda parseInt eller Number, för att ändra string till number
     })
     //res.json(artist + 'artist name is deleted');
     res.send('deleted');
     res.json(true)
 })
+}catch{
+
+}
