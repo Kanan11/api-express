@@ -5,6 +5,18 @@ var generateId = require('./artists/artists');
 
 var app = express();
 
+
+//-------------------TEST CODE-Middleware----------------------
+const getInfo = (req, res, next) => {
+    console.log('OBS här hänt nån=> ' + `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    next();
+}
+
+app.use(getInfo)
+//------------------------------------------------------------
+
+
+
 function generateId() {
     return Math.floor(Math.random() * 100)
 };
@@ -12,18 +24,21 @@ function generateId() {
 
 var artists = [
     {
-        id: generateId(),
+        id: 1,
         name: 'Metalica'
     },
     {
-        id: generateId(),
+        id: 2,
         name: 'Evanescence'
     },
     {
-        id: generateId(),
+        id: 3,
         name: 'Red Hot Chili Peppers'
     }
 ];
+
+exports.artists = artists;
+
 
 //Body parser Middleware
 app.use(express.json());
@@ -50,6 +65,9 @@ try {
 catch {
     console.log('error defined')
 };
+
+
+
 
 
 
@@ -117,3 +135,4 @@ try{
 }catch{
 
 }
+
