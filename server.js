@@ -1,138 +1,102 @@
 var express = require('express');
 const path = require('path');
-var artists = require('./artists/artists');
-var generateId = require('./artists/artists');
 
 var app = express();
 
-
-//-------------------TEST CODE-Middleware----------------------
 const getInfo = (req, res, next) => {
     console.log('OBS här hänt nån=> ' + `${req.protocol}://${req.get('host')}${req.originalUrl}`);
     next();
 }
 
-app.use(getInfo)
-//------------------------------------------------------------
+app.use(getInfo) // DEMO
 
 
 
 function generateId() {
-    return Math.floor(Math.random() * 100)
+    return Math.floor(Math.random() * 100).toString();
+
 };
 
 
 var artists = [
     {
-        id: 1,
+        id: generateId(),
         name: 'Metalica'
     },
     {
-        id: 2,
+        id: generateId(),
         name: 'Evanescence'
     },
     {
-        id: 3,
+        id: generateId(),
         name: 'Red Hot Chili Peppers'
+    },
+    {
+        id: generateId(),
+        name: 'Nirvana'
     }
 ];
 
-exports.artists = artists;
+app.use(express.static("public")) // Klient mappen
 
+// server
+const PORT = process.env.PORT || 3012;
+
+app.listen(PORT, function () {
+    console.log(`server started at port ${PORT}`)
+})
 
 //Body parser Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-try{
+
+// Ta fram
+try {
     app.get('/artists', function (req, res) {
-        res.send(artists)
+        res.json(artists)
     });
-}catch{
+} catch (err) {
     console.log('error')
 }
 
-// Här andra variant GET
-try {
-    app.get('/artists/:id', function (req, res) {
-        //console.log(req.params);
-        var artist = artists.find(function (artist) {
-            return artist.id === req.params.id
-        });
-        res.send(artist);
-    })
-}
-catch {
-    console.log('error defined')
-};
-
-
-
-
-
-
-/* app.get('/test', function (req, res) {
-    //res.render('', { title: 'member' })
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    //res.send('<h1>my API is in action</h1>')
-}); */
-
-/* app.get('/', (req,res)=>{
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-}); */
-
-
-
-app.use(express.static("public"))
-
-app.listen(3012, function () {
-    console.log('API is started')
-})
 
 // Lägga till 
-try {
-
-    app.post('/artists', function (req, res) {
+app.post('/artists', function (req, res) {
+    try {
         var artist = {
             id: generateId(),
             name: req.body.name
         };
         artists.push(artist);
-        //console.log(req.body);
-        //res.json(artist + 'post data');
-        res.send('added');
-    });
-}catch{
-    console.error();
-}
+        res.json('added');
+    } catch {
+        console.error();
+    }
+});
 
 // Uppdatera befinglight namn
-try{
-
-    app.put('/artists/:id', function (req, res) {
+app.put('/artists/:id', function (req, res) {
+    try {
         var artist = artists.find(function (artist) {
-            return artist.id === Number(req.params.id) //här kan använda parseInt eller Number, för att ändra string till number
+            return artist.id === req.params.id;
         });
         artist.name = req.body.name;
-        //res.json(artist + 'artist name is updated');
-        res.send('updated')
-    })
-}catch{
-    console.error();
-}
+        res.json('updated')
+    } catch (err) {
+        console.error();
+    }
+})
 
 
 // Ta bort
-try{
-    app.delete('/artists/:id', function (req, res) {
+app.delete('/artists/:id', function (req, res) {
+    try {
         artists = artists.filter(function (artist) {
-        return artist.id !== Number(req.params.id); //här kan använda parseInt eller Number, för att ändra string till number
-    })
-    //res.json(artist + 'artist name is deleted');
-    res.send('deleted');
-    res.json(true)
+            return artist.id !== req.params.id; 
+        })
+        res.json('deleted');
+    } catch (err) {
+        console.error();
+    }
 })
-}catch{
-
-}
-
