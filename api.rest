@@ -2,18 +2,23 @@ GET http://localhost:3012/artists
 
 ###
 
-POST http://localhost:3012/artists Content-Type: application/json
-
+POST http://localhost:3012/artists
 {
-"name": "Kanan"
+    "name": "Kanan"
 }
 
 ###
 
-PUT http://localhost:3012/artists Content-Type: application/json
+PUT http://localhost:3012/artists/87 
+Content-Type: application/json
+
+{
+   "name": "Kanan"
+}
 
 ###
 
-DELETE http://localhost:3012/artists Content-Type: application/json
+DELETE http://localhost:3012/artists/87 
+Content-Type: application/json
 
 ###
